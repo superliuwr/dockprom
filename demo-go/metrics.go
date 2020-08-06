@@ -7,21 +7,17 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var (
-	registry = prometheus.NewRegistry()
-)
-
 func NewCounter(subsystem string, name string, help string, labelNames []string) *prometheus.CounterVec {
 	// TODO Check parameters are valid
 
 	counter := prometheus.NewCounterVec(prometheus.CounterOpts{
 		Subsystem: subsystem,
-		Name: name,
-		Help: help,
+		Name:      name,
+		Help:      help,
 	}, labelNames)
 
 	// TODO Don't panic when fail
-	registry.MustRegister(counter)
+	prometheus.MustRegister(counter)
 
 	return counter
 }
@@ -46,13 +42,13 @@ func NewHistogram(subsystem string, name string, help string, buckets []float64,
 
 	histogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Subsystem: subsystem,
-		Name: name,
-		Help: help,
-		Buckets: buckets,
+		Name:      name,
+		Help:      help,
+		Buckets:   buckets,
 	}, labelNames)
 
 	// TODO Don't panic when fail
-	registry.MustRegister(histogram)
+	prometheus.MustRegister(histogram)
 
 	return histogram
 }
@@ -66,5 +62,5 @@ func NewHttpRequestDurationHistogram(component string) *prometheus.HistogramVec 
 }
 
 func HandlerFuncForMetrics() http.Handler {
-	return promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
+	return promhttp.Handler()
 }
