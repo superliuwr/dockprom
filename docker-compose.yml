@@ -7,6 +7,7 @@ networks:
 volumes:
     prometheus_data: {}
     grafana_data: {}
+    grafana6_data: {}
 
 services:
 
@@ -157,6 +158,26 @@ services:
     expose:
       - 8001
       - 8101
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+  grafana6:
+    image: grafana/grafana:6.7.4
+    container_name: grafana6
+    volumes:
+      - grafana6_data:/var/lib/grafana
+      - ./grafana6/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    expose:
+      - 3000
     networks:
       - monitor-net
     labels:
